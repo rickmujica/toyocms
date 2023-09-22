@@ -94,7 +94,7 @@ export default function MenuHeader() {
         disableElevation
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
-        sx={{backgroundColor: 'darkred'}}
+        sx={{bgcolor: 'darkred', ":hover": { bgcolor: "white", color: "darkred" }}}
       >
         Admin
       </Button>

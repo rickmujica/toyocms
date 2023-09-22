@@ -28,8 +28,11 @@ export default class cars extends Model {
         get() {
           /** convierte a mayuscula la primera letra antes de retornar */
           const lower = this.getDataValue('fuel');
-          const ucfirst = lower.charAt(0).toUpperCase() + lower.slice(1);
-          return ucfirst;
+          if (lower) {
+            const ucfirst = lower.charAt(0).toUpperCase() + lower.slice(1);
+            return ucfirst;
+          }
+          return lower;
         }
       },
       transmision: {

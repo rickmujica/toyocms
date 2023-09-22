@@ -3,8 +3,13 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
 import { useRouter, useParams } from "next/navigation";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { CloseOutlined } from "@mui/icons-material";
 
 const style = (theme) => ({
   position: "absolute",
@@ -23,7 +28,7 @@ const style = (theme) => ({
   },
 });
 
-export default function BasicModal({ children }) {
+export default function Modal(props) {
   const [open, setOpen] = React.useState(true);
   const router = useRouter();
 
@@ -33,28 +38,24 @@ export default function BasicModal({ children }) {
     setOpen(false);
   };
 
-  React.useEffect(() => {
-    window.onbeforeunload = function() {
-        router.back();
-    };
-
-    return () => {
-        window.onbeforeunload = null;
-    };
-}, []);
-
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-      id="basic-modal"
-    >
-      <Box sx={style}>
-        <Button sx={{float: 'right'}} onClick={handleClose}>x</Button>
-        {children}
-      </Box>
-    </Modal>
+    <>
+    <Dialog open={open} onClose={handleClose} scroll='paper' maxWidth='xl' fullWidth>
+        <DialogTitle>
+        {props.titulo}
+        <Button sx={{float: 'right', color: 'red'}} onClick={handleClose}><CloseOutlined /></Button>
+        </DialogTitle>
+          <DialogContent>
+            <>
+            {props.children}
+            </>
+          </DialogContent>
+        <DialogActions>
+          <Button color="error" onClick={handleClose}>Cerrar</Button>
+          {/* <Button color="error" onClick={handleClose}>Aceptar</Button> */}
+        </DialogActions>
+        </Dialog>
+
+    </>
   );
 }

@@ -1,3 +1,5 @@
+@import url('https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css');
+
 :root {
   --max-width: 1100px;
   --border-radius: 12px;
@@ -96,8 +98,8 @@ body {
 } */
 
 a {
-  color: inherit;
-  text-decoration: none;
+  color: inherit !important;
+  text-decoration: none !important;
 }
 
 main {
@@ -112,5 +114,166 @@ main {
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
+  }
+}
+
+#filters .accordion-item {
+	 background-color: transparent;
+	 border-top: 1px solid gray;
+	 border-bottom: 0;
+	/*noUi slider ya no se usa, quedo desplazado por no ser compatible con react*/
+}
+ #filters .accordion-item .accordion-header .accordion-button {
+  color: black;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 5px 2px;
+  text-transform: uppercase;
+  background-color: transparent;
+  box-shadow: none;
+  display: flex;
+  justify-content: space-between;
+  border: none;
+  align-items: center;
+  width: 100%;
+}
+ #filters .accordion-item .accordion-header .accordion-button::after {
+	 margin-right: 5px;
+   margin-left: 5px;
+	 font-size: 18px;
+	 line-height: 5px;
+	 font-weight: 500;
+	 content: "+";
+	 background: none;
+}
+ #filters .accordion-item .accordion-header .accordion-button:focus, #filters .accordion-item .accordion-header .accordion-button:focus-visible {
+	 border: 0 !important;
+	 box-shadow: none;
+   outline-color: red;
+}
+ #filters .accordion-item .accordion-header .accordion-button:not(.collapsed)::after {
+	 transform: none;
+	 content: "-";
+   margin-right: 5px;
+   margin-left: 5px;
+	 font-size: 18px;
+	 line-height: 5px;
+	/*cambiamos el line heigth para que el guion quede a la altura del signo + */
+}
+ #filters .accordion-item .accordion-body {
+	 padding-left: 0;
+	 padding-right: 0;
+	 padding-top: 0;
+}
+ #filters .accordion-item .accordion-body.dual {
+	 display: grid;
+	 grid-template-columns: repeat(2, 1fr);
+}
+ #filters .accordion-item .accordion-body .form-check .form-check-label {
+	 font-size: 13px;
+	 font-weight: 500;
+	 line-height: 28px;
+	/*para centrar verticalmente en relacion al check*/
+	 margin-left: 8px;
+}
+ #filters .accordion-item .accordion-body .form-check .form-check-input {
+	 border-radius: 4px;
+	 border: 1px solid gray;
+	 background-color: transparent;
+	 width: 20px;
+	 height: 20px;
+}
+ #filters .accordion-item .accordion-body .form-check .form-check-input:checked {
+	 background-color: red;
+	 border-color: red;
+}
+ #filters .accordion-item .accordion-body .form-check .form-check-input:focus {
+	 box-shadow: 0 0 0 0.25rem red;
+}
+ #filters .accordion-item .accordion-body .MuiSlider-root {
+	 color: red;
+	 margin-bottom: 10px;
+	 margin-left: 13px;
+	 margin-Right: 13px;
+	 width: 92%;
+}
+ #filters .accordion-item .accordion-body .MuiSlider-root .MuiSlider-thumb {
+	 border: 1px solid gray;
+	 border-radius: 14px;
+	 background: white;
+	 box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
+	 width: 26px;
+	 height: 26px;
+}
+ #filters .accordion-item .noUi-target {
+	 background: white;
+	 border-radius: 2px;
+	 border: 1px solid red;
+	 height: 3px;
+	/*mitad del height del handler*/
+	 margin-top: 13px;
+	/*mitad del width del handler, para que no sobresalga a los lados*/
+	 margin-left: 13px;
+	 margin-right: 13px;
+	/* mitad dle height del handler + 10 px de margen para que no se pegue a los elementos de abajo*/
+	 margin-bottom: 23px;
+}
+ #filters .accordion-item .noUi-target .noUi-connect {
+	 background-color: red;
+}
+ #filters .accordion-item .noUi-target .noUi-handle {
+	 border: 1px solid gray;
+	 border-radius: 14px;
+	 background: white;
+	 cursor: default;
+	 box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
+	 width: 26px;
+	 height: 26px;
+	 right: -13px;
+	/*mitad del width*/
+	 top: -13px;
+	/*mitad del height*/
+}
+ #filters .accordion-item .noUi-target .noUi-handle:after, #filters .accordion-item .noUi-target .noUi-handle:before {
+	 display: none;
+}
+ #filters .accordion-item .range-values {
+	 display: flex;
+	 flex-direction: row;
+	 justify-content: space-between;
+	 margin-bottom: 10px;
+}
+ #filters .accordion-item .range-values div {
+	 border: 1px solid gray;
+	 border-radius: 4px;
+	 font-size: 14px;
+	 line-height: 14px;
+	 padding: 5px 12px;
+}
+ #filters .clear-filters {
+  height: fit-content;
+}
+
+ button:focus {
+  outline-color: none;
+  outline: 0;
+}
+
+ button.MuiIconButton-root:focus {
+  outline-color: none;
+  outline: 0;
+}
+
+.css-1rtfih8-MuiDrawer-docked {
+  z-index: 0;
+}
+
+div.MuiBox-root.css-0 {
+  z-index: 2;
+}
+
+@media (max-width: 736px) {
+  .css-rorn0c-MuiTableContainer-root {
+    width: 50%;
   }
 }
