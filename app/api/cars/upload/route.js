@@ -74,8 +74,7 @@ export async function POST(request) {
 }
 
   export async function DELETE(request) {
-    // const { carId, imageName } = request.body;
-
+   
     const data = await request.formData();
 
     const imageName = data.get("imageName");

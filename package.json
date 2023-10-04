@@ -17,6 +17,7 @@
     "@mui/x-data-grid": "^6.11.1",
     "bcryptjs-react": "^2.4.6",
     "bootstrap": "^5.3.1",
+    "filefy": "^0.1.11",
     "jose": "^4.14.4",
     "mariadb": "^3.2.0",
     "mysql2": "^3.6.0",

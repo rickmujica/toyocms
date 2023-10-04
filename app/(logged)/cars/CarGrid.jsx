@@ -20,12 +20,17 @@ import Tooltip from "@mui/material/Tooltip";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import DeleteIcon from "@mui/icons-material/Delete";
-import FilterListIcon from "@mui/icons-material/FilterList";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import { visuallyHidden } from "@mui/utils";
 import {
   Add,
   CloseOutlined,
   Edit,
+  FileDownload,
   PlusOne,
   Search,
   SearchOutlined,
@@ -34,6 +39,7 @@ import {
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button, InputAdornment, TextField } from "@mui/material";
+import {CsvBuilder} from 'filefy';
 import useWindowSize from "../../hooks/useWindowDimensions";
 
 function descendingComparator(a, b, orderBy) {
@@ -225,9 +231,19 @@ EnhancedTableHead.propTypes = {
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected } = props;
+  const { numSelected, handleDelete, selectedId, exportGrid } = props;
+  const [open, setOpen] = React.useState(false);
+  // const { handleDelete, selectedId } = props;
+  const handleOpenDeleteDialog = () => {
+    setOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpen(false);
+  };
 
   return (
+    <>
     <Toolbar
       sx={{
         pl: { sm: 2 },
@@ -263,11 +279,18 @@ function EnhancedTableToolbar(props) {
       )}
 
       {numSelected > 0 && (
+        <>
+        <Tooltip title="Descargar CSV">
+          <IconButton onClick={exportGrid}>
+          <FileDownload sx={{ color: "red", mr: 2 }} />
+          </IconButton>
+        </Tooltip>
         <Tooltip title="eliminar">
-          <IconButton>
+          <IconButton onClick={handleOpenDeleteDialog}>
             <DeleteIcon sx={{ color: "red" }} />
           </IconButton>
         </Tooltip>
+        </>
       )}
 
       <Link href={`/cars/add`}>
@@ -278,6 +301,32 @@ function EnhancedTableToolbar(props) {
         </Tooltip>
       </Link>
     </Toolbar>
+    <Dialog
+        open={open}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {numSelected > 1 ?
+          "Realmente desea eliminar estos vehiculos?"
+          :
+          "Realmente desea eliminar este vehiculo?"
+          }
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Esta operación no puede deshacerse.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button sx={{color: 'red'}} onClick={handleCloseDeleteDialog}>Cancelar</Button>
+          <Button sx={{color: 'red'}} onClick={() => { handleDelete(selectedId); handleCloseDeleteDialog();}} autoFocus>
+            Aceptar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
 
@@ -285,10 +334,12 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
+
 export default function CarGrid(props) {
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("name");
   const [selected, setSelected] = React.useState([]);
+  const [selectedId, setSelectedId] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -361,7 +412,7 @@ export default function CarGrid(props) {
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
+  const handleClick = (event, name, id) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
@@ -377,8 +428,42 @@ export default function CarGrid(props) {
         selected.slice(selectedIndex + 1)
       );
     }
+    // console.log("ACA ESTA EL ESTADO selectedId", selectedId)
+    // console.log("ACA ESTA LA VARIABLE NEWSELECTED", newSelected)
+    // console.log("ACA ESTA LA VARIABLE name", name)
 
     setSelected(newSelected);
+    setSelectedId(selectedId.concat(id))
+  };
+
+  const handleDelete = async (cars) => {
+    
+    // Realizar la petición fetch de eliminacion
+    try {
+      const response = await fetch('/api/cars/delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cars),
+      });
+      
+      const data = await response.json();
+      
+      // console.log("ACA VIENE LA DATA", data);
+
+      if (data.success) {
+        setSelected([]);
+        setSelectedId([]);
+        setTimeout(() => {
+          router.refresh();
+          router.replace("/cars", undefined, { shallow: true });
+          }, "1000");
+        }
+    } catch (error) {
+
+      console.error(error);
+    }
   };
 
   const handleChangePage = (event, newPage) => {
@@ -408,10 +493,46 @@ export default function CarGrid(props) {
 
   const widthString = String(windowSize.width - 5) + "px";
 
+  
+
+  const exportGrid = async () => {
+    const currentDate = new Date();
+    const day = currentDate.getDate().toString().padStart(2, '0');
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = currentDate.getFullYear().toString().slice(-2); // Para obtener los dos últimos dígitos del año
+    const formattedDate = `${day}-${month}-${year}`;
+    
+    // Filtra el array completo de filas para obtener solo las filas seleccionadas
+    const selectedData = cars.filter((row) => selected.includes(row.name)).map((car) => ({
+      ...car,
+      category: car.category.name,
+      brand: car.brand.name,
+      color: car.color.name,
+      location: car.location.name,
+    }));
+    
+  
+    // Mapea los datos de las filas seleccionadas en el orden de las columnas
+    const data = selectedData.map((rowData) =>
+      headCells.map((columnDef) => rowData[columnDef.id])
+    );
+  
+    // Exporta los datos a un archivo CSV
+    new CsvBuilder(`vehiculos_usados_${formattedDate}.csv`)
+      .setColumns(headCells.map((columnDef) => columnDef.label))
+      .addRows(data)
+      .exportFile();
+  }
+
   return (
     <Box sx={{ width: "98%", m: "1%" }}>
       <Paper elevation={4} sx={{ width: "98%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          handleDelete={handleDelete}
+          selectedId={selectedId}
+          exportGrid={exportGrid}
+          />
         <Box sx={{ p: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Buscar vehículo"
@@ -462,7 +583,7 @@ export default function CarGrid(props) {
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.name)}
+                    onClick={(event) => handleClick(event, row.name, row.id)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}

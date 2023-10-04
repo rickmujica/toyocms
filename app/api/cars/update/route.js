@@ -14,7 +14,7 @@ export async function POST(req, res) {
  
    // Analizar el cuerpo de la solicitud como JSON
    const car = JSON.parse(body);
-console.log("ACA ESTA EL CAAAAAARRR", car)
+// console.log("ACA ESTA EL CAAAAAARRR", car)
   const [updatedRows] =  await db.cars.update(
     {
       name: car.name,

@@ -26,9 +26,7 @@ export default function CarAddForm(props) {
   let fuelValues = JSON.parse(props.fuelValues);
   let transmisionValues = JSON.parse(props.transmisionValues);
   let statusValues = JSON.parse(props.statusValues);
-//   let rawFuel = JSON.parse(props.rawFuel);
-//   let rawTransmision = JSON.parse(props.rawTransmision);
-//   let rawStatus = JSON.parse(props.rawStatus);
+
   const firstLetterLowercase = (data) => data?.charAt(0).toLowerCase() + data?.slice(1);
 
   const router = useRouter();
@@ -39,25 +37,6 @@ export default function CarAddForm(props) {
     'Vendido': 'selled'
   };
 
-//   const [formData, setFormData] = useState({
-//     id: car.id,
-//     name: car.name,
-//     year: car.year,
-//     seats: car.seats,
-//     fuel: firstLetterLowercase(car.fuel),
-//     transmision: firstLetterLowercase(car.transmision),
-//     kilometers: car.kilometers,
-//     plate: car.plate,
-//     category_id: car.category_id,
-//     brand_id: car.brand_id,
-//     color_id: car.color_id,
-//     location_id: car.location_id,
-//     images: JSON.stringify(car.images),
-//     price: car.price,
-//     status: statusMap[car.status],
-//     deleted: car.deleted,
-//     partial_price: car.partial_price,
-//   });
   const [formData, setFormData] = useState({
     name: '',
     year: '',
@@ -120,15 +99,15 @@ export default function CarAddForm(props) {
       
       const data = await response.json();
       
-      console.log("ACA VIENE LA DATA", data);
+      // console.log("ACA VIENE LA DATA", data);
 
       if (data.success) {
         setShowAlert(true);
 
         setTimeout(() => {
-
+          router.replace("/cars", undefined, { shallow: true });
+          router.refresh();
           setShowAlert(false);
-
           router.push(`/cars/edit/${data?.data?.id}`);
 
           }, "1500");
